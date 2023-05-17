@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"text/template"
 
+	"github.com/mattfenwick/collections/pkg/dict"
+	"github.com/mattfenwick/collections/pkg/iterable"
 	"github.com/mattfenwick/collections/pkg/slice"
 )
 
@@ -26,9 +28,13 @@ func Example() {
 		fmt.Println()
 		Traverse(t, processDebug)
 	}
-	for field, pos := range fields {
+
+	for _, field := range slice.Sort(iterable.ToSlice(dict.KeysIterator(fields))) {
+		pos := fields[field]
 		fmt.Printf("field %s: %+v\n", field, pos)
 	}
+
+	fmt.Printf("%s\n", FieldsTable(dict.Map(myLen[int], fields)))
 
 	// fmt.Printf("t: %s\n", json.MustMarshalToString(len(um.Root.Nodes)))
 	// for _, u := range um.Root.Nodes {
@@ -44,4 +50,8 @@ func Example() {
 	// fmt.Println()
 	// Traverse(myNewTemp, findFields)
 	// fmt.Println()
+}
+
+func myLen[A any](xs []A) int {
+	return len(xs)
 }
