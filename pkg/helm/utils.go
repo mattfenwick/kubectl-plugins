@@ -22,6 +22,7 @@ var (
 	helmBuiltins = funcMap(
 		"required", "quote", "default", "trunc", "trimSuffix", "replace", "include",
 		"dict", "set", "toYaml", "nindent", "sha256sum", "indent", "list", "join", "int",
+		"sha1sum",
 		"toJson",
 		"mergeOverwrite", "b64enc")
 )
