@@ -34,7 +34,7 @@ func Example() {
 		fmt.Printf("field %s: %+v\n", field, pos)
 	}
 
-	fmt.Printf("%s\n", FieldsTable(dict.Map(myLen[int], fields)))
+	fmt.Printf("%s\n", FieldsTable(dict.Map(slice.Length[int], fields)))
 
 	// fmt.Printf("t: %s\n", json.MustMarshalToString(len(um.Root.Nodes)))
 	// for _, u := range um.Root.Nodes {
@@ -50,8 +50,4 @@ func Example() {
 	// fmt.Println()
 	// Traverse(myNewTemp, findFields)
 	// fmt.Println()
-}
-
-func myLen[A any](xs []A) int {
-	return len(xs)
 }

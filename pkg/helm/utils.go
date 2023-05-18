@@ -4,6 +4,9 @@ import (
 	"reflect"
 	"text/template"
 	"text/template/parse"
+
+	"github.com/mattfenwick/kubectl-plugins/pkg/utils"
+	"github.com/pkg/errors"
 )
 
 func funcMap(xs ...string) template.FuncMap {
@@ -28,13 +31,21 @@ func isNil(v any) bool {
 	return v == nil || (reflect.ValueOf(v).Kind() == reflect.Ptr && reflect.ValueOf(v).IsNil())
 }
 
+func NodeTypeToString(t parse.NodeType) string {
+	val, ok := NodeTypeToStringMap[t]
+	if !ok {
+		utils.DoOrDie(errors.Errorf("invalid node type: %d", t))
+	}
+	return val
+}
+
 var (
-	NodeToString = map[parse.NodeType]string{
-		parse.NodeText:       "text",
+	NodeTypeToStringMap = map[parse.NodeType]string{
 		parse.NodeAction:     "action",
 		parse.NodeBool:       "bool",
 		parse.NodeBreak:      "break",
 		parse.NodeChain:      "chain",
+		parse.NodeCommand:    "command",
 		parse.NodeComment:    "comment",
 		parse.NodeContinue:   "continue",
 		parse.NodeDot:        "dot",
@@ -48,6 +59,7 @@ var (
 		parse.NodeRange:      "range",
 		parse.NodeString:     "string",
 		parse.NodeTemplate:   "template",
+		parse.NodeText:       "text",
 		parse.NodeVariable:   "variable",
 		parse.NodeWith:       "with",
 	}

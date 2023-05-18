@@ -212,7 +212,7 @@ func resolveField(node parse.Node, prefix string) (string, bool) {
 
 func processDebug(node parse.Node, frame *Frame) {
 	prefix := strings.Repeat(" ", frame.Level)
-	fmt.Printf(prefix+"text: %s, %d: ", NodeToString[node.Type()], node.Position())
+	fmt.Printf(prefix+"%s: %d, %d: ", NodeTypeToString(node.Type()), node.Type(), node.Position())
 
 	switch v := node.(type) {
 	case *parse.TextNode:
