@@ -41,6 +41,10 @@ func Traverse(t *template.Template, process func(parse.Node, *Frame)) {
 	traverse(t.Tree.Root, process, &Frame{})
 }
 
+func todoTraverseListNode(n *parse.ListNode, process func(parse.Node, *Frame)) {
+	traverse(n, process, &Frame{})
+}
+
 // TODO: mess with resolving '.'
 //    see https://pkg.go.dev/text/template
 //
