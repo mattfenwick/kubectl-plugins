@@ -1,0 +1,60 @@
+{{- if .Values.stuff.ingress.enabled -}}
+{{- $serviceName := "stuff" }}
+{{- $fullName := include "example.fullname" . -}}
+{{- $useTLS := or .Values.scanfarm.enabled .Values.stuff.stuffweb.tlsSidecar.enabled }}
+
+{{ $path := .Values.stuff.ingress.path }}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    {{- if (eq .Values.stuff.ingress.class "nginx") }}
+    nginx.ingress.kubernetes.io/backend-protocol: {{ if $useTLS }}"HTTPS"{{ else }}"HTTP"{{ end }}
+    {{- end }}
+  {{- with .Values.stuff.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ingressClassName: {{ .Values.stuff.ingress.class }}
+  {{- if .Values.stuff.ingress.tls }}
+  {{- if (gt (len .Values.stuff.ingress.tls) 0)}}
+  tls:
+    {{- range .Values.stuff.ingress.tls }}
+    - hosts:
+      {{- with .hosts }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      secretName: {{ required "secretName is required" .secretName }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+  rules:
+    {{ if eq (len .Values.stuff.ingress.hosts) 0 }}
+    - http:
+        paths:
+          - backend:
+              service:
+                name: {{ $fullName }}-{{ $serviceName }}
+                port:
+                  number: {{ if $useTLS }}8443{{ else }}8080{{ end }}
+            path: {{ $path }}
+            pathType: ImplementationSpecific
+    {{- end }}
+    {{- range $host := .Values.stuff.ingress.hosts }}
+    - host: {{ required "Host is required" $host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ $fullName }}-{{ $serviceName }}
+                port:
+                  number: {{ if $useTLS }}8443{{ else }}8080{{ end }}
+            path: {{ $path }}
+            pathType: ImplementationSpecific
+    {{- end }}
+{{- end }}

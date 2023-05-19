@@ -49,14 +49,15 @@ func Example(withSimple bool, withTemplate bool) {
 func ParseTemplate() []*template.Template {
 	myNewTemp := template.New("my-new")
 	myNewTemp = myNewTemp.Funcs(helmBuiltins)
-	myNewTemp = template.Must(myNewTemp.ParseGlob("/Users/mfenwick/gitprojects/synopsys/cnc-umbrella-chart/charts/cnc/templates/*"))
+	// myNewTemp = template.Must(myNewTemp.ParseGlob("./examples/*"))
+	myNewTemp = template.Must(myNewTemp.ParseFiles("./examples/ingress.yaml"))
 	logrus.Infof("defined templates, my-new: %+v\n", myNewTemp.DefinedTemplates())
 
 	return slice.SortOn(func(t *template.Template) string { return t.Name() }, myNewTemp.Templates())
 }
 
 func Parse() map[string]*parse.Tree {
-	bytes, err := ioutil.ReadFile("/Users/mfenwick/gitprojects/synopsys/cnc-umbrella-chart/charts/cnc/templates/ingress.yaml")
+	bytes, err := ioutil.ReadFile("./examples/ingress.yaml")
 	utils.DoOrDie(errors.Wrapf(err, "unable to read file"))
 	trees, err := parse.Parse("my-parse", string(bytes), "", "", helmBuiltins)
 	utils.DoOrDie(errors.Wrapf(err, "unable to parse string"))

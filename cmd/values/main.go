@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	helm.Example(true, false)
+	helm.Example(true, true)
 }
