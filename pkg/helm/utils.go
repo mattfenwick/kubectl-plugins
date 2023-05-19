@@ -5,6 +5,7 @@ import (
 	"text/template"
 	"text/template/parse"
 
+	"github.com/mattfenwick/collections/pkg/slice"
 	"github.com/mattfenwick/kubectl-plugins/pkg/utils"
 	"github.com/pkg/errors"
 )
@@ -19,13 +20,18 @@ func funcMap(xs ...string) template.FuncMap {
 }
 
 var (
-	helmBuiltins = funcMap(
+	helmBuiltins = []string{
 		"required", "quote", "default", "trunc", "trimSuffix", "replace", "include",
 		"dict", "set", "toYaml", "nindent", "sha256sum", "indent", "list", "join", "int",
-		"or", "eq", "gt", "len", "print", "printf", "index",
 		"sha1sum",
 		"toJson",
-		"mergeOverwrite", "b64enc")
+		"mergeOverwrite", "b64enc"}
+	helmBuiltinsMap = funcMap(helmBuiltins...)
+
+	parseBuiltins = []string{
+		"and", "call", "html", "index", "slice", "js", "len", "not", "or", "print",
+		"printf", "println", "urlquery", "eq", "ge", "gt", "le", "lt", "ne"}
+	parseBuiltinsMap = funcMap(slice.Concat([][]string{helmBuiltins, parseBuiltins})...)
 )
 
 func isNil(v any) bool {
