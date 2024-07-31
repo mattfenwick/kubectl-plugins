@@ -1,21 +1,45 @@
 package report
 
 import (
+	"context"
+
 	"github.com/mattfenwick/kubectl-plugins/pkg/utils"
 	"github.com/pkg/errors"
-	v1 "k8s.io/api/core/v1"
 )
 
 func Run() {
 	kube, err := NewKubernetesForContext("")
 	utils.DoOrDie(err)
-	rawNsWatcher, err := kube.WatchNamespaces()
+
+	rootCtx := context.Background()
+
+	nsWatcher, err := kube.WatchNamespaces()
 	utils.DoOrDie(err)
-	nsWatcher := &TypedWatcher[*v1.Namespace]{Name: "namespaces", WatchInterface: rawNsWatcher}
+	podWatcher, err := kube.WatchPods()
+	utils.DoOrDie(err)
+	configMapWatcher, err := kube.WatchConfigMaps()
+	utils.DoOrDie(err)
+	secretWatcher, err := kube.WatchSecrets()
+	utils.DoOrDie(err)
+	eventWatcher, err := kube.WatchEvents()
+	utils.DoOrDie(err)
+
 	stop := make(chan struct{})
 
 	go func() {
-		HandleNamespaceEvents(nsWatcher)
+		HandleNamespaceEvents(rootCtx, nsWatcher)
+	}()
+	go func() {
+		HandlePodEvents(rootCtx, podWatcher)
+	}()
+	go func() {
+		HandleConfigMapEvents(rootCtx, configMapWatcher)
+	}()
+	go func() {
+		HandleSecretEvents(rootCtx, secretWatcher)
+	}()
+	go func() {
+		HandleEventEvents(rootCtx, eventWatcher)
 	}()
 
 	<-stop
